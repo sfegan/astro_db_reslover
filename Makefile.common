@@ -1,0 +1,96 @@
+# -----------------------------------------------------------------------------
+#
+# Ethernet data logger common makefile definitions
+#
+# Original Author: Stephen Fegan
+# $Author: sfegan $
+# $Date: 2008/05/19 20:12:03 $
+# $Revision: 1.2 $
+# $Tag$
+#
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# COMPILER FLAGS
+# -----------------------------------------------------------------------------
+
+#ifndef VERITASDIR
+VERITASDIR    := /usr/local/veritas
+#endif
+
+COMMONCFLAGS   = -I. -I$(VERITASDIR)/include \
+		 -D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS -DNOCOSEVENT \
+		 -DNOHDF5
+COMMONLDFLAGS  = -L$(VERITASDIR)/lib
+
+CXX            = g++
+ARCHCFLAGS     = -Wall -g
+LD             = g++
+ARCHLDFLAGS    =
+ARCHSOFLAGS    = -shared
+
+CFLAGS         = $(COMMONCFLAGS) $(ARCHCFLAGS) \
+		 $(MYSQLCFLAGS) $(ZTHREADCFLAGS) $(VDBCFLAGS)
+CXXFLAGS       = $(COMMONCFLAGS) $(ARCHCFLAGS) \
+		 $(MYSQLCFLAGS) $(ZTHREADCFLAGS) $(OMNICFLAGS) $(VDBCFLAGS)
+LDFLAGS        = $(COMMONLDFLAGS) $(ARCHLDFLAGS) \
+		 $(MYSQLLDFLAGS) $(ZTHREADLDFLAGS) $(OMNILDFLAGS) $(VDBLDFLAGS)
+
+# -----------------------------------------------------------------------------
+# VDB FLAGS
+# -----------------------------------------------------------------------------
+
+#VDBCFLAGS     := -I$(VERITASDIR)/include/VDB -Dnothreads
+#VDBLDFLAGS    := 
+
+# -----------------------------------------------------------------------------
+# MYSQL FLAGS
+# -----------------------------------------------------------------------------
+
+#ifndef MYSQLDIR
+#MYSQLDIR      := /usr/lib/mysql
+#endif
+
+#MYSQLCFLAGS   := $(shell $(MYSQLDIR)/mysql_config --cflags)
+#MYSQLLDFLAGS  := $(shell $(MYSQLDIR)/mysql_config --libs)
+
+# -----------------------------------------------------------------------------
+# ZTHREADS
+# -----------------------------------------------------------------------------
+
+ifndef ZTHREADDIR
+ZTHREADDIR     := $(VERITASDIR)
+endif
+
+ZTHREADCFLAGS  := -I$(ZTHREADDIR)/include
+ZTHREADLDFLAGS := -L$(ZTHREADDIR)/lib -lZThread -lpthread
+
+# -----------------------------------------------------------------------------
+# IDL
+# -----------------------------------------------------------------------------
+
+ifndef OMNIORBDIR
+OMNIORBDIR     := /usr/local
+endif
+
+IDLFLAGS       := -bcxx -Wbh=.h -Wbs=.cpp -Wbd=_dyn.cpp -Wba
+IDL            := $(OMNIORBDIR)/bin/omniidl
+OMNICFLAGS     := -I$(OMNIORBDIR)/include/omniORB4
+OMNILDFLAGS    := -L$(OMNIORBDIR)/lib -lomniDynamic4 -lomniORB4
+
+# -----------------------------------------------------------------------------
+# SOAP
+# -----------------------------------------------------------------------------
+
+ifndef GSOAPDIR
+GSOAPDIR       := /usr/local
+endif
+
+ifndef GSOAPINCDIR
+GSOAPINCDIR    := $(GSOAPDIR)/include/gsoap-2.7
+endif
+
+WSDL           := $(GSOAPDIR)/bin/wsdl2h
+WSDLFLAGS      := -I$(GSOAPINCDIR) -t$(GSOAPINCDIR)/typemap.dat
+SOAPCPP2       := $(GSOAPDIR)/bin/soapcpp2
+SOAPCPP2FLAGS  := -C -x -w -I$(GSOAPINCDIR)
